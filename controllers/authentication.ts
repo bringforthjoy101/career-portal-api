@@ -70,6 +70,46 @@ export const preLogin = async (req: Request, res: Response) => {
 	}
 };
 
+export const dahsboard = async (req: Request, res: Response) => {
+	try {
+		const data = [];
+		const where: any = {};
+		if (req.candidate) {
+			where.candidateId = req.candidate.id;
+			const documents = await DB.documents.findAll({
+				where,
+				attributes: { exclude: ['createdAt', 'updatedAt'] },
+			});
+			data.push({ name: 'Documents', value: documents.length });
+		} else {
+			const candidates = await DB.candidates.findAll({
+				attributes: { exclude: ['createdAt', 'updatedAt'] },
+			});
+			data.push({ name: 'Candidates', value: candidates.length });
+
+			const admins = await DB.admins.findAll({
+				attributes: { exclude: ['createdAt', 'updatedAt'] },
+			});
+			data.push({ name: 'Admins', value: admins.length });
+		}
+		const vacancies = await DB.vacancies.findAll({
+			attributes: { exclude: ['createdAt', 'updatedAt'] },
+		});
+		data.push({ name: 'Vacancies', value: vacancies.length });
+
+		const applications = await DB.applications.findAll({
+			where,
+			attributes: { exclude: ['createdAt', 'updatedAt'] },
+		});
+		data.push({ name: 'Applications', value: applications.length });
+
+		return successResponse(res, 'Dashboard data retrieved', data);
+	} catch (error) {
+		console.log(error);
+		return handleResponse(res, 401, false, `An error occured - ${error}`);
+	}
+};
+
 export const updatePassword = async (req: Request, res: Response) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {

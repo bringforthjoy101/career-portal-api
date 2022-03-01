@@ -16,7 +16,7 @@ const createDocument = async (req: Request, res: Response) => {
 		return errorResponse(res, 'Validation Error', errors.array());
 	}
 	const { name, file } = req.body;
-	const insertData: DocumentDataType = { name, file };
+	const insertData: DocumentDataType = { name, file, candidateId: req.candidate.id };
 	try {
 		const documentExists: any = await DB.documents.findOne({
 			where: { name, candidateId: req.candidate.id },

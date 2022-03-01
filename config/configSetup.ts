@@ -43,8 +43,8 @@ const getConfig = (): Config => {
 		TWILLIO_MESSAGE_SERVICE_ID: process.env.TWILLIO_MESSAGE_SERVICE_ID,
 		PUBLIC_ROUTES: [
 			'/',
-			'/login',
-			'/register',
+			'/candidate/login',
+			'/candidate/register',
 			'/send-otp',
 			'/verify-otp',
 			'/change-password',

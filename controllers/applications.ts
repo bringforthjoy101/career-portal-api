@@ -16,7 +16,7 @@ const createApplication = async (req: Request, res: Response) => {
 		return errorResponse(res, 'Validation Error', errors.array());
 	}
 	const { vacancyId } = req.body;
-	const insertData: ApplicationDataType = { vacancyId };
+	const insertData: ApplicationDataType = { vacancyId, candidateId: req.candidate.id };
 	try {
 		const applicationExists: any = await DB.applications.findOne({
 			where: { vacancyId, candidateId: req.candidate.id },

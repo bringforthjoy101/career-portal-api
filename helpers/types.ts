@@ -153,6 +153,7 @@ export type IdsDataType = {
 export type DocumentDataType = {
 	name: string;
 	file: string;
+	candidateId: number | string;
 };
 
 export type VacancyDataType = {
@@ -163,6 +164,7 @@ export type VacancyDataType = {
 
 export type ApplicationDataType = {
 	vacancyId: number;
+	candidateId: number;
 };
 
 export type PaymentLogDataType = {

@@ -2,7 +2,16 @@
 import { Router } from 'express';
 
 // Import function files
-import { preLogin, register, updatePassword, resetPassword, changePassword, verifyOtp, updateUserSettings } from './controllers/authentication';
+import {
+	preLogin,
+	register,
+	updatePassword,
+	resetPassword,
+	changePassword,
+	verifyOtp,
+	updateUserSettings,
+	dahsboard,
+} from './controllers/authentication';
 import admin from './controllers/admins';
 import vacancy from './controllers/vacancies';
 import document from './controllers/documents';
@@ -21,6 +30,8 @@ API CALL START
 router.get('/', (req, res) => {
 	return res.status(200).send('API Working');
 });
+
+router.get('/dashboard', dahsboard);
 
 router.post('/candidate/register', validate('/register'), register);
 router.post('/candidate/login', validate('/login'), preLogin);
@@ -48,7 +59,7 @@ router.get('/vacancies/delete/:id', isAdmin([AdminRoles.CONTROL]), validate('id'
 router.post('/vacancies/create', isAdmin([AdminRoles.CONTROL]), vacancy.createVacancy);
 router.post('/vacancies/update/:id', isAdmin([AdminRoles.CONTROL]), vacancy.updateVacancy);
 
-router.get('/documents/:status?', document.getDocuments);
+router.get('/documents', document.getDocuments);
 router.get('/documents/get-details/:id', validate('id'), document.getDocumentDetails);
 router.get('/documents/delete/:id', validate('id'), document.deleteDocument);
 router.post('/documents/create', document.createDocument);
