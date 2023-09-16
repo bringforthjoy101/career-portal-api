@@ -10,9 +10,20 @@ import DB from './db';
 
 // Import function files
 import { handleResponse, successResponse, errorResponse, otpValidity } from '../helpers/utility';
-import { RegisterDataType, TokenDataType, typeEnum, VerifyOtpDataType, FnResponseDataType, ChangePasswordDataType } from '../helpers/types';
+import {
+	RegisterDataType,
+	TokenDataType,
+	typeEnum,
+	VerifyOtpDataType,
+	FnResponseDataType,
+	ChangePasswordDataType,
+	MailType,
+} from '../helpers/types';
 import { activateAccount, login, sendOtp } from '../helpers/auth';
 import { checkBranch, checkBusiness } from '../helpers/middlewares';
+import { getNotificationTemplateData, getOtpTemplateData } from '../helpers/mailer/templateData';
+import { prepareMail } from '../helpers/mailer/mailer';
+import { mailTemplate } from '../helpers/mailer/template';
 
 export const register = async (req: Request, res: Response) => {
 	const errors = validationResult(req);
@@ -241,6 +252,95 @@ export const updateUserSettings = async (req: Request, res: Response) => {
 		const updatedSettings: any = await candidate.update({ twoFa });
 		if (!updatedSettings) return errorResponse(res, `Unable update settings!`);
 		return successResponse(res, `Settings updated successfully`);
+	} catch (error) {
+		console.log(error);
+		return errorResponse(res, `An error occured - ${error}`);
+	}
+};
+
+export const sendGuide = async (req: Request, res: Response) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) return errorResponse(res, 'Validation Error', errors.array());
+
+	// const { email, phone, type } = req.body;
+	// const { email, phone, type, businessId } = req.body;
+	try {
+
+		const users = await DB.candidates.findAll({ where: {onboard: false}, limit: 2, attributes: ['email', 'names']});
+		// console.log({ users })
+		console.log(users.map(({ email, names }: {email: string, names: string}) => {
+			return { email, names };
+		}))
+		const userEmails = users.map(({ email, names }: {email: string, names: string}) => {
+			return { email, names };
+		})
+
+		setTimeout(async ()=> {
+			for (const user of userEmails) {
+				console.log({ user })
+				const { mailSubject, mailBody } = getNotificationTemplateData({ data: {name: user.names}, type: MailType.APPLICATION_GUIDE });
+				// prepare and send mail
+				const sendEmail = await prepareMail({
+					mailRecipients: user.email,
+					mailSubject,
+					mailBody: mailTemplate({ subject: mailSubject, body: mailBody }),
+					senderName: config.MAIL_FROM_NAME,
+					senderEmail: config.MAIL_FROM,
+				});
+				console.log({sendEmail})
+				if(sendEmail.status) DB.candidates.update({onboard: true},{where: {email: user.email}})
+			}
+		}, 10000)
+
+
+
+
+		// if (sendEmail.status) return fnResponse({ status: true, message: 'OTP Sent', data: encoded });
+		// return fnResponse({ status: false, message: 'OTP not sent' });
+		// if (!regData.status) return errorResponse(res, 'An error occured');
+		return successResponse(res, `Successful`,);
+	} catch (error) {
+		console.log(error);
+		return errorResponse(res, `An error occured - ${error}`);
+	}
+};
+
+export const acknowledge = async (req: Request, res: Response) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) return errorResponse(res, 'Validation Error', errors.array());
+
+	// const { email, phone, type } = req.body;
+	// const { email, phone, type, businessId } = req.body;
+	try {
+
+		const applications = await DB.applications.findAll({ where: {acknowledged: false, status:'pending'}, include:[{model: DB.candidates, attributes:['email', 'names']},{model: DB.vacancies, attributes:['name']}]});
+		const applicants = applications.map(({ id, candidate, vacancy }: {id: string, candidate: any, vacancy: any}) => {
+			return { id, candidate, vacancy };
+		})
+
+		// console.log(JSON.stringify({applicants}))
+
+		setTimeout(async ()=> {
+			for (const applicant of applicants) {
+				console.log({name: applicant.candidate.names, position: applicant.vacancy.name, email: applicant.candidate.email})
+				const { mailSubject, mailBody } = getNotificationTemplateData({ data: {name: applicant.candidate.names, position: applicant.vacancy.name}, type: MailType.APPLICATION_SUCCESS });
+				// prepare and send mail
+				const sendEmail = await prepareMail({
+					mailRecipients: applicant.candidate.email,
+					mailSubject,
+					mailBody: mailTemplate({ subject: mailSubject, body: mailBody }),
+					senderName: config.MAIL_FROM_NAME,
+					senderEmail: config.MAIL_FROM,
+				});
+				console.log({sendEmail})
+				if(sendEmail.status) await DB.applications.update({acknowledged: true},{where: {id: applicant.id}})
+			}
+		}, 10000)
+
+		// if (sendEmail.status) return fnResponse({ status: true, message: 'OTP Sent', data: encoded });
+		// return fnResponse({ status: false, message: 'OTP not sent' });
+		// if (!regData.status) return errorResponse(res, 'An error occurred');
+		return successResponse(res, `Successful`,);
 	} catch (error) {
 		console.log(error);
 		return errorResponse(res, `An error occured - ${error}`);

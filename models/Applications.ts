@@ -10,6 +10,10 @@ export default function (sequelize: any, Sequelize: any) {
 				type: Sequelize.ENUM('pending', 'approved', 'declined'),
 				defaultValue: 'pending',
 			},
+			acknowledged: {
+				type: Sequelize.BOOLEAN,
+				defaultValue: false,
+			},
 		},
 		{
 			freezeTableName: true,

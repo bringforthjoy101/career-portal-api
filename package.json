@@ -7,12 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "nodemon app.ts",
     "build": "tsc --project ./",
-    "start": "node build/app.js",
-    "postinstall": "tsc",
+    "start": "npm run build && node build/app.js",
     "db": "mysql -h 127.0.0.1 -u root -pP@ssword123 career",
+    "seed:db": "sequelize db:seed:all",
     "refresh:git": "rm -rf .git"
   },
-  "engines": { "node": "14.17.3" },
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -42,11 +41,11 @@
     "moment": "^2.29.1",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
-    "nodemailer": "^6.7.2",
+    "nodemailer": "^6.9.5",
     "otp-generator": "^4.0.0",
     "sequelize": "^5.21.3",
-    "twilio": "^3.73.0",
     "ts-node": "^10.4.0",
+    "twilio": "^3.73.0",
     "typescript": "^4.5.4"
   }
 }

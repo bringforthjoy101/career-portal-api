@@ -20,6 +20,8 @@ declare global {
 			DBHOST: string;
 			DBPORT: string;
 			DBDIALECT: string;
+			WEBSITE: string;
+			LOGO: string;
 			MAIL_FROM: string;
 			MAIL_FROM_NAME: string;
 			SENDGRID_API_KEY: string;

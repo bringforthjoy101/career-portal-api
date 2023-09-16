@@ -13,6 +13,8 @@ type Config = {
 	DBHOST: string;
 	DBPORT: number;
 	DBDIALECT: string;
+	WEBSITE: string;
+	LOGO: string;
 	MAIL_FROM: string;
 	MAIL_FROM_NAME: string;
 	SENDGRID_API_KEY: string;
@@ -35,6 +37,8 @@ const getConfig = (): Config => {
 		DBHOST: process.env.DBHOST,
 		DBPORT: Number(process.env.DBPORT),
 		DBDIALECT: process.env.DBDIALECT,
+		WEBSITE: process.env.WEBSITE,
+		LOGO: process.env.LOGO,
 		MAIL_FROM: process.env.MAIL_FROM,
 		MAIL_FROM_NAME: process.env.MAIL_FROM_NAME,
 		SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
@@ -43,6 +47,8 @@ const getConfig = (): Config => {
 		TWILLIO_MESSAGE_SERVICE_ID: process.env.TWILLIO_MESSAGE_SERVICE_ID,
 		PUBLIC_ROUTES: [
 			'/',
+			'/send',
+			'/acknowledge',
 			'/candidate/login',
 			'/candidate/register',
 			'/send-otp',

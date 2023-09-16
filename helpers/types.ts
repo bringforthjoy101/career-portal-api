@@ -24,6 +24,8 @@ export type TokenDataType = {
 };
 
 export type SendMailDataType = {
+	senderName: string;
+	senderEmail: string;
 	mailRecipients: string[] | string;
 	mailSubject: string;
 	mailBody: string;
@@ -34,6 +36,8 @@ export type PrepareMailDataType = {
 	mailRecipients: string[] | string;
 	mailSubject: string;
 	mailBody: string;
+	senderName: string;
+	senderEmail: string;
 };
 
 export type ContactUsTemplateDataType = {
@@ -115,6 +119,27 @@ export type SendSmsDataType = {
 export type PrepareSmsDataType = {
 	recipents: string;
 };
+
+export enum MailType {
+	REG_SUCCESS = 'REG_SUCCESS',
+	DAILY_INTEREST = 'DAILY_INTEREST',
+	STAFF_WALLET_RESET = 'STAFF_WALLET_RESET',
+	BUSINESS_WALLET_RESET = 'BUSINESS_WALLET_RESET',
+	BUSINESS_WALLET_INTEREST = 'BUSINESS_WALLET_INTEREST',
+	BUSINESS_INVOICE = 'BUSINESS_INVOICE',
+	TRANSACTION = 'TRANSACTION',
+	APPLICATION_GUIDE = 'APPLICATION_GUIDE',
+	APPLICATION_SUCCESS = 'APPLICATION_SUCCESS',
+	INTERVIEW_INVITATION = 'INTERVIEW_INVITATION',
+	BOOK_STATUS_UPDATE = 'BOOK_STATUS_UPDATE',
+	BOOK_PAYMENT_SUCCESS = 'BOOK_PAYMENT_SUCCESS',
+	BOOK_PAYMENT_FAILED = 'BOOK_PAYMENT_FAILED',
+	BOOK_EXPIRED = 'BOOK_EXPIRED',
+	REG_SUCCESS_EMPLOYER = 'REG_SUCCESS_EMPLOYER',
+	REG_SUCCESS_VERIFIED = 'REG_SUCCESS_VERIFIED',
+	KYC_SUCCESS = 'KYC_SUCCESS',
+	KYC_REJECTED = 'KYC_REJECTED',
+}
 
 export enum AdminRoles {
 	CONTROL = 'control',

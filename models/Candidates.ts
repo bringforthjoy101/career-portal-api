@@ -28,6 +28,14 @@ export default function (sequelize: any, Sequelize: any) {
 				type: Sequelize.ENUM('active', 'inactive'),
 				defaultValue: 'active',
 			},
+			onboard: {
+				type: Sequelize.BOOLEAN,
+				defaultValue: false,
+			},
+			guide: {
+				type: Sequelize.BOOLEAN,
+				defaultValue: false,
+			},
 		},
 		{
 			freezeTableName: true,

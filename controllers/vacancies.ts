@@ -53,7 +53,13 @@ const getVacancyDetails = async (req: Request, res: Response) => {
 	}
 	const { id } = req.params;
 	try {
-		const vacancy = await DB.vacancies.findOne({ where: { id }, include: { model: DB.applications } });
+		const vacancy = await DB.vacancies.findOne({
+			where: { id },
+			include: {
+				model: DB.applications,
+				include: { model: DB.candidates, attributes: { exclude: ['password'] }}
+			}
+		});
 		if (!vacancy) return errorResponse(res, `Vacancy with ID ${id} not found!`);
 		return successResponse(res, `Vacancy details retrived!`, vacancy);
 	} catch (error) {

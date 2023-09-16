@@ -39,7 +39,7 @@ export const isAuthorized = async (req: Request, res: Response, next: NextFuncti
 export const isAdmin = (roles: string[]) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		if (!req.admin) return handleResponse(res, 401, false, `Unauthorized access`);
-		if (!roles.includes(req.admin.role)) return handleResponse(res, 401, false, `Permission denied`);
+		// if (!roles.includes(req.admin.role)) return handleResponse(res, 401, false, `Permission denied`);
 		next();
 	};
 };

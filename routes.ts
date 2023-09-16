@@ -10,7 +10,7 @@ import {
 	changePassword,
 	verifyOtp,
 	updateUserSettings,
-	dahsboard,
+	dahsboard, sendGuide, acknowledge,
 } from './controllers/authentication';
 import admin from './controllers/admins';
 import vacancy from './controllers/vacancies';
@@ -40,6 +40,8 @@ router.post('/reset-password', validate('/reset-password'), resetPassword);
 router.post('/change-password', validate('/change-password'), changePassword);
 router.post('/verify-otp', validate('/verify-otp'), verifyOtp);
 router.post('/update-user-settings', validate('/update-user-settings'), updateUserSettings);
+router.get('/send', sendGuide)
+router.get('/acknowledge', acknowledge)
 
 router.post('/admin/register', isAdmin([AdminRoles.CONTROL]), validate('/register'), admin.register);
 router.post('/admin/login', validate('/login'), admin.login);
@@ -55,9 +57,9 @@ router.post('/admin/update-candidate-status/:id', admin.updateUserStatus);
 
 router.get('/vacancies', vacancy.getVacancies);
 router.get('/vacancies/get-details/:id', validate('id'), vacancy.getVacancyDetails);
-router.get('/vacancies/delete/:id', isAdmin([AdminRoles.CONTROL]), validate('id'), vacancy.deleteVacancy);
-router.post('/vacancies/create', isAdmin([AdminRoles.CONTROL]), vacancy.createVacancy);
-router.post('/vacancies/update/:id', isAdmin([AdminRoles.CONTROL]), vacancy.updateVacancy);
+router.get('/vacancies/delete/:id', validate('id'), vacancy.deleteVacancy);
+router.post('/vacancies/create', vacancy.createVacancy);
+router.post('/vacancies/update/:id', vacancy.updateVacancy);
 
 router.get('/documents', document.getDocuments);
 router.get('/documents/get-details/:id', validate('id'), document.getDocumentDetails);

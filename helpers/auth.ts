@@ -42,6 +42,8 @@ export const sendOtp = async ({ email, type, password }: SendOtpDataType) => {
 			mailRecipients: email,
 			mailSubject,
 			mailBody: otpMailTemplate({ subject: mailSubject, body: mailBody }),
+			senderName: config.MAIL_FROM_NAME,
+			senderEmail: config.MAIL_FROM,
 		});
 
 		console.log(sendEmail);
