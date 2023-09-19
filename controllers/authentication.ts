@@ -46,11 +46,35 @@ export const register = async (req: Request, res: Response) => {
 		if (candidateExists) return handleResponse(res, 400, false, `candidate with email ${email} already exists`);
 		const candidate: any = await DB.candidates.create(insertData);
 
+		const { mailSubject, mailBody } = getNotificationTemplateData({ data: {name: names}, type: MailType.REG_SUCCESS });
+		// prepare and send mail
+		await prepareMail({
+			mailRecipients: email,
+			mailSubject,
+			mailBody: mailTemplate({ subject: mailSubject, body: mailBody }),
+			senderName: config.MAIL_FROM_NAME,
+			senderEmail: config.MAIL_FROM,
+		});
+
+		setTimeout(async ()=> {
+				const { mailSubject, mailBody } = getNotificationTemplateData({ data: {name: names}, type: MailType.APPLICATION_GUIDE });
+				// prepare and send mail
+				const sendEmail = await prepareMail({
+					mailRecipients: email,
+					mailSubject,
+					mailBody: mailTemplate({ subject: mailSubject, body: mailBody }),
+					senderName: config.MAIL_FROM_NAME,
+					senderEmail: config.MAIL_FROM,
+				});
+				console.log({sendEmail})
+				if(sendEmail.status) DB.candidates.update({onboard: true},{where: {email}})
+		}, 10000)
+
 		if (candidate) return handleResponse(res, 200, true, `Registration successfull`);
-		return handleResponse(res, 401, false, `An error occured`);
+		return handleResponse(res, 401, false, `An error occurred`);
 	} catch (error) {
 		console.log(error);
-		return handleResponse(res, 401, false, `An error occured - ${error}`);
+		return handleResponse(res, 401, false, `An error occurred - ${error}`);
 	}
 };
 
@@ -81,7 +105,7 @@ export const preLogin = async (req: Request, res: Response) => {
 	}
 };
 
-export const dahsboard = async (req: Request, res: Response) => {
+export const dashboard = async (req: Request, res: Response) => {
 	try {
 		const data = [];
 		const where: any = {};

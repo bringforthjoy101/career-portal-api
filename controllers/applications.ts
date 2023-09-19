@@ -7,7 +7,11 @@ import DB from './db';
 
 // Import function files
 import { handleResponse, successResponse, errorResponse } from '../helpers/utility';
-import { ApplicationDataType } from '../helpers/types';
+import { ApplicationDataType, MailType } from '../helpers/types';
+import { getNotificationTemplateData } from '../helpers/mailer/templateData';
+import { prepareMail } from '../helpers/mailer/mailer';
+import { mailTemplate } from '../helpers/mailer/template';
+import config from '../config/configSetup';
 
 // create application
 const createApplication = async (req: Request, res: Response) => {
@@ -18,18 +22,35 @@ const createApplication = async (req: Request, res: Response) => {
 	const { vacancyId } = req.body;
 	const insertData: ApplicationDataType = { vacancyId, candidateId: req.candidate.id };
 	try {
+		const vacancy = await DB.vacancies.findOne({where :{id: vacancyId}})
+		if(!vacancy) return errorResponse(res, `Invalid Vacancy`);
 		const applicationExists: any = await DB.applications.findOne({
 			where: { vacancyId, candidateId: req.candidate.id },
 			attributes: { exclude: ['createdAt', 'updatedAt'] },
 		});
 		// if application exists, stop the process and return a message
 		if (applicationExists) return errorResponse(res, `You already applied for this vacancy`);
-		const application: any = await DB.applications.create(insertData);
-		if (application) return successResponse(res, `Application successfull`);
-		return errorResponse(res, `An error occured`);
+		const hasDocuments = await DB.documents.findAll({where: {candidateId: req.candidate.id}})
+		if(!hasDocuments.length) return errorResponse(res, 'Please, add all your credentials as documents first before applying.')
+		const application = await DB.applications.create(insertData);
+
+		// Send email
+		const { mailSubject, mailBody } = getNotificationTemplateData({ data: {name: req.candidate.names, position: vacancy.name}, type: MailType.APPLICATION_SUCCESS });
+		// prepare and send mail
+		const sendEmail = await prepareMail({
+			mailRecipients: req.candidate.email,
+			mailSubject,
+			mailBody: mailTemplate({ subject: mailSubject, body: mailBody }),
+			senderName: config.MAIL_FROM_NAME,
+			senderEmail: config.MAIL_FROM,
+		});
+		// console.log({sendEmail})
+		if(sendEmail.status) await DB.applications.update({acknowledged: true},{where: {id: application.id}})
+		if (application) return successResponse(res, `Application successful`);
+		return errorResponse(res, `An error occurred`);
 	} catch (error) {
 		console.log(error);
-		return errorResponse(res, `An error occured - ${error}`);
+		return errorResponse(res, `An error occurred - ${error}`);
 	}
 };
 

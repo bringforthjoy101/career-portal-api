@@ -10,7 +10,7 @@ import {
 	changePassword,
 	verifyOtp,
 	updateUserSettings,
-	dahsboard, sendGuide, acknowledge,
+	sendGuide, acknowledge, dashboard,
 } from './controllers/authentication';
 import admin from './controllers/admins';
 import vacancy from './controllers/vacancies';
@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
 	return res.status(200).send('API Working');
 });
 
-router.get('/dashboard', dahsboard);
+router.get('/dashboard', dashboard);
 
 router.post('/candidate/register', validate('/register'), register);
 router.post('/candidate/login', validate('/login'), preLogin);
