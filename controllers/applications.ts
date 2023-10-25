@@ -24,6 +24,7 @@ const createApplication = async (req: Request, res: Response) => {
 	try {
 		const vacancy = await DB.vacancies.findOne({where :{id: vacancyId}})
 		if(!vacancy) return errorResponse(res, `Invalid Vacancy`);
+		if(vacancy.status === 'closed') return errorResponse(res, `Application for this vacancy is closed!`);
 		const applicationExists: any = await DB.applications.findOne({
 			where: { vacancyId, candidateId: req.candidate.id },
 			attributes: { exclude: ['createdAt', 'updatedAt'] },
